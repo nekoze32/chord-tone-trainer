@@ -51,14 +51,14 @@ const TRAINING_STEPS = [
 // 上から 1弦e（高音）→ 6弦E（低音）：TAB譜と同じ視点
 const STRING_TUNING = [4,11,7,2,9,4]; // 1e,2B,3G,4D,5A,6E
 const STRING_LABELS = ["e","B","G","D","A","E"]; // 上=高音弦、下=低音弦
-const FRET_COUNT = 12;
+const FRET_COUNT = 15;
 function getNoteAtFret(s,f){return(STRING_TUNING[s]+f)%12;}
 
 // フレット間隔: スマホは画面幅から逆算、PCは余裕あり
 function getFretSpacing(windowWidth) {
-  if (windowWidth < 480) return Math.floor((windowWidth - 80) / (FRET_COUNT + 1));
-  if (windowWidth < 768) return 34;
-  return 44;
+  if (windowWidth < 480) return Math.floor((windowWidth - 56) / (FRET_COUNT + 1));
+  if (windowWidth < 768) return 28;
+  return 40;
 }
 
 // ── Web Audio ────────────────────────────────────────
@@ -167,18 +167,18 @@ function PlayButton({onClick,label="▶",size="sm",style={}}){
 function FretboardDiagram({root,intervals,colorMap,onNoteClick}){
   const ww=useWindowWidth();
   const FS=getFretSpacing(ww);
-  const FC=13;
+  const FC=15;
   const rootIdx=NOTES.indexOf(root);
   const chordTones=intervals.map(i=>(rootIdx+i)%12);
-  const svgW=FC*FS+60, svgH=160;
+  const svgW=FC*FS+52, svgH=160;
   return(
     <div style={{overflowX:"auto",marginTop:8}}>
       <svg width={svgW} height={svgH} style={{display:"block"}}>
-        {Array.from({length:FC+1},(_,f)=><text key={f} x={55+f*FS} y={14} fontSize={10} fill="#888" textAnchor="middle">{f}</text>)}
-        <rect x={55} y={20} width={3} height={120} fill="#aaa"/>
+        {Array.from({length:FC+1},(_,f)=><text key={f} x={48+f*FS} y={14} fontSize={10} fill="#888" textAnchor="middle">{f}</text>)}
+        <rect x={48} y={20} width={3} height={120} fill="#aaa"/>
         {Array.from({length:FC},(_,f)=><rect key={f} x={55+(f+1)*FS} y={20} width={1} height={120} fill="#444"/>)}
-        {STRING_TUNING.map((_,s)=><line key={s} x1={55} y1={28+s*22} x2={55+FC*FS} y2={28+s*22} stroke="#666" strokeWidth={1.5-s*0.15}/>)}
-        {STRING_LABELS.map((lbl,s)=><text key={s} x={38} y={32+s*22} fontSize={11} fill="#aaa" textAnchor="middle">{lbl}</text>)}
+        {STRING_TUNING.map((_,s)=><line key={s} x1={48} y1={28+s*22} x2={48+FC*FS} y2={28+s*22} stroke="#666" strokeWidth={1.5-s*0.15}/>)}
+        {STRING_LABELS.map((lbl,s)=><text key={s} x={30} y={32+s*22} fontSize={11} fill="#aaa" textAnchor="middle">{lbl}</text>)}
         {STRING_TUNING.map((_,s)=>Array.from({length:FC+1},(_,f)=>{
           const note=getNoteAtFret(s,f);
           const ctIdx=chordTones.indexOf(note);
@@ -187,8 +187,8 @@ function FretboardDiagram({root,intervals,colorMap,onNoteClick}){
           const color=colorMap[iv]||"#e74c3c";
           return(
             <g key={`${s}-${f}`} onClick={()=>onNoteClick&&onNoteClick(note)} style={{cursor:onNoteClick?"pointer":"default"}}>
-              <circle cx={55+f*FS} cy={28+s*22} r={Math.min(10,FS/2-2)} fill={color} opacity={0.9}/>
-              <text x={55+f*FS} y={32+s*22} fontSize={8} fill="white" textAnchor="middle" fontWeight="bold">
+              <circle cx={48+f*FS} cy={28+s*22} r={Math.min(10,FS/2-2)} fill={color} opacity={0.9}/>
+              <text x={48+f*FS} y={32+s*22} fontSize={8} fill="white" textAnchor="middle" fontWeight="bold">
                 {NOTES[(rootIdx+iv)%12]}
               </text>
             </g>
@@ -206,15 +206,15 @@ function FretboardFull({root,type,highlightInterval,onNoteClick}){
   const rootIdx=NOTES.indexOf(root);
   const intervals=CHORD_TYPES[type].intervals;
   const chordTones=intervals.map(i=>(rootIdx+i)%12);
-  const w=FRET_COUNT*FS+72, h=6*26+36;
+  const w=FRET_COUNT*FS+56, h=6*26+36;
   return(
     <div style={{overflowX:"auto"}}>
       <svg width={w} height={h} style={{display:"block",minWidth:w}}>
-        {Array.from({length:FRET_COUNT+1},(_,f)=><text key={f} x={62+f*FS} y={13} fontSize={9} fill="#444" textAnchor="middle">{f}</text>)}
-        <rect x={62} y={18} width={3} height={h-30} fill="#777" rx={1}/>
-        {Array.from({length:FRET_COUNT},(_,f)=><rect key={f} x={62+(f+1)*FS} y={18} width={1} height={h-30} fill="#222"/>)}
-        {STRING_TUNING.map((_,s)=><line key={s} x1={62} y1={26+s*26} x2={62+FRET_COUNT*FS} y2={26+s*26} stroke="#2a2a2a" strokeWidth={1}/>)}
-        {STRING_LABELS.map((lbl,s)=><text key={s} x={46} y={30+s*26} fontSize={10} fill="#444" textAnchor="middle">{lbl}</text>)}
+        {Array.from({length:FRET_COUNT+1},(_,f)=><text key={f} x={52+f*FS} y={13} fontSize={9} fill="#444" textAnchor="middle">{f}</text>)}
+        <rect x={52} y={18} width={3} height={h-30} fill="#777" rx={1}/>
+        {Array.from({length:FRET_COUNT},(_,f)=><rect key={f} x={52+(f+1)*FS} y={18} width={1} height={h-30} fill="#222"/>)}
+        {STRING_TUNING.map((_,s)=><line key={s} x1={52} y1={26+s*26} x2={52+FRET_COUNT*FS} y2={26+s*26} stroke="#2a2a2a" strokeWidth={1}/>)}
+        {STRING_LABELS.map((lbl,s)=><text key={s} x={36} y={30+s*26} fontSize={10} fill="#444" textAnchor="middle">{lbl}</text>)}
         {STRING_TUNING.map((_,s)=>Array.from({length:FRET_COUNT+1},(_,f)=>{
           const note=getNoteAtFret(s,f);
           const ctIdx=chordTones.indexOf(note);
@@ -224,8 +224,8 @@ function FretboardFull({root,type,highlightInterval,onNoteClick}){
           const color=INTERVAL_COLOR[iv]||"#888";
           return(
             <g key={`${s}-${f}`} onClick={()=>onNoteClick&&onNoteClick(note,s)} style={{cursor:onNoteClick?"pointer":"default"}}>
-              <circle cx={62+f*FS} cy={26+s*26} r={Math.min(10,FS/2-2)} fill={color} opacity={lit?0.95:0.18}/>
-              <text x={62+f*FS} y={30+s*26} fontSize={8} fill={lit?"white":"#444"} textAnchor="middle" fontWeight="bold">{INTERVAL_LABEL[iv]}</text>
+              <circle cx={52+f*FS} cy={26+s*26} r={Math.min(10,FS/2-2)} fill={color} opacity={lit?0.95:0.18}/>
+              <text x={52+f*FS} y={30+s*26} fontSize={8} fill={lit?"white":"#444"} textAnchor="middle" fontWeight="bold">{INTERVAL_LABEL[iv]}</text>
             </g>
           );
         }))}
@@ -339,7 +339,6 @@ function VisualizeMode(){
       </div>
       <div style={{marginTop:24,padding:"12px 16px",background:"#1a1a1a",borderRadius:8,fontSize:12,color:"#666",borderLeft:"3px solid #e74c3c"}}>
         目標: コードを見た瞬間に「指板上の光る場所」がイメージできる状態。<br/>
-        長岡亮介的なフレーズは、コードトーンを骨格にして音が動いている。
       </div>
     </div>
   );
